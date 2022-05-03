@@ -12,82 +12,109 @@ int F(int n)
     return a+b+d;
 }
 
+struct SnapShotStruct{
+    int a , b , c,n,stage;
+};
+
 int F_iterative(int n)
-{   int original_n=n;
-    int address = 10; // Entry point for each each "call"
-    stack<int> s;
-    int temp=n;
-    int a=1, b=1 , c , d;
-    int *arr;
-    arr= new int [n]; // i will store in it the value of the Functions mo2akatan
-   s.push(30); // Initial return address
-   s.push(n);
-   int index=0;
-    while(!s.empty())
-    {
-        switch(address)
+{   int retVal = 0;  // initialize with default returning value
+    stack<SnapShotStruct> snapshotStack;
+    SnapShotStruct currentSnapshot;
+    int for_a , for_b  , d;
+    currentSnapshot.n=n;
+    currentSnapshot.a=0;
+    currentSnapshot.b=0;
+    currentSnapshot.c=0;
+    currentSnapshot.stage=10;
+    snapshotStack.push(currentSnapshot);
+    while(!snapshotStack.empty())
+    {   currentSnapshot=snapshotStack.top();
+        snapshotStack.pop();
+        switch(currentSnapshot.stage)
         {
             case 10:
             {
-                n = s.top();
-                s.pop();
-                if(n <=1)
+                if(currentSnapshot.n <=1)
                 { // The base case
-                    address = s.top();
-                    s.pop();
-                    arr[index]=1;
+                    retVal=1;
+                    for_a=1;
+                    for_b=0;
+                    continue;
+
                 }
                 else
                 {
-                    s.push(n);
-                    s.push(20); // Address to point to it after finishing case 10
-                    s.push(n-1);
-                    address = 10; // Make another "call"
+                    currentSnapshot.stage = 20;
+                    snapshotStack.push(currentSnapshot);
+                    SnapShotStruct newSnapshot;
+                    newSnapshot.n= currentSnapshot.n-1;
+                    newSnapshot.a=0;
+                    newSnapshot.b=0;
+                    newSnapshot.c=0;
+                    newSnapshot.stage=10;
+                    snapshotStack.push(newSnapshot);
                 }
                 break;
             }
-            case 20:  // address 20
-            { // Compute and return
-                temp = s.top();
-                s.pop();
-                a=arr[temp-2]+temp;
-                b=temp*arr[(temp/2)-1];
-                c=temp-2-(a+b)%2;
-                if(c<0){c=0;}
-                else {c--;}
-                d=arr[c];
-                index++;
-                arr[index]=a+b+d;
-               // cout<<arr[index]<<endl;
-                address = s.top();
-                s.pop();
+
+            case 20:
+            //compute a
+            {
+                currentSnapshot.a=currentSnapshot.n+for_a;
+                currentSnapshot.stage=30;
+                snapshotStack.push(currentSnapshot);
                 break;
             }
             case 30:
-                // The final return value to break the loop
-                temp = s.top();
-                s.pop();
+            //compute b
+                {
+                    if(currentSnapshot.b%2==0){
+                        for_b++;
+                    }
+                    SnapShotStruct newCall;
+                    snapshotStack.push(currentSnapshot);
+                    newCall.n = for_b;
+                    newCall.stage = 10;
+                    snapshotStack.push(newCall);
+
+                    currentSnapshot.b=currentSnapshot.n*retVal;
+                    currentSnapshot.c=currentSnapshot.n-2-(currentSnapshot.a+currentSnapshot.b)%2;
+                    currentSnapshot.stage=40;
+                    snapshotStack.push(currentSnapshot);
+
+                }
+                break;
+            case 40:// compute d
+            {
+                    if(currentSnapshot.c<=1){
+                       d=1;
+
+                    }
+                else {
+                        SnapShotStruct newCall;
+                        newCall.n = currentSnapshot.c;
+                        newCall.stage = 10;
+                        snapshotStack.push(currentSnapshot);
+                        snapshotStack.push(newCall);
+                    }
+
+                retVal=currentSnapshot.a+currentSnapshot.b+d;
+                for_a=retVal;
+                break;
+        }
+
         }
     }
-    return arr[original_n-1];
+    return retVal;
 }
 int main() {
 
-    cout<<F(2)<<endl;
-    cout<<F_iterative(2)<<endl ;
-    cout<<F(3)<<endl;
-    cout<<F_iterative(3)<<endl ;
-    cout<<F(4)<<endl;
-    cout<<F_iterative(4)<<endl ;
-    cout<<F(6)<<endl;
-    cout<<F_iterative(6)<<endl ;
-    cout<<F(7)<<endl;
-    cout<<F_iterative(7)<<endl ;
-    cout<<F(8)<<endl;
-    cout<<F_iterative(8)<<endl ;
-    cout<<F(9)<<endl;
-    cout<<F_iterative(9)<<endl ;
-    cout<<F(10)<<endl;
-    cout<<F_iterative(10)<<endl ;
+    /*for (int i = 1; i <20 ; i++) {
+        cout<<F(i)<<endl;
+        cout<<F_iterative(i)<<endl ;
+    }*/
+
+    cout<<F_iterative(5)<<endl ;
+
     return 0;
 }
