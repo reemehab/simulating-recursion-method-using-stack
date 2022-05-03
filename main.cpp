@@ -62,7 +62,7 @@ int F_iterative(int n)
                 currentSnapshot.stage=30;
                 snapshotStack.push(currentSnapshot);
                 currentSnapshot.stage=10;
-                currentSnapshot.n=(currentSnapshot.n)/2;
+                currentSnapshot.n=currentSnapshot.n/2;
                 snapshotStack.push(currentSnapshot);
                 break;
             }
