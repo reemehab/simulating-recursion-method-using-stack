@@ -1,16 +1,6 @@
 #include <iostream>
 #include<stack>
 using namespace std;
-int F(int n)
-{
-    if (n <= 1) return 1;
-    int a = n + F(n - 1);
-    int b = n * F(n / 2);
-    int c = n - 2 - (a + b) % 2;
-    int d = F(c);
-    return a + b + d;
-}
-
 // a struct called snapshot to hold a , b, c, n , address of the next instruction
 struct SnapShot
 {
@@ -37,8 +27,8 @@ int F_iterative(int n)
         {
             case 10:
                 //we are pushing instances from instance.n=n to  instance.n=1 at n=n-1 until base case is reached
-                {
-                 if(currentSnapshot.n<=1)
+            {
+                if(currentSnapshot.n<=1)
                 {
                     retVal=1;
                     continue;
@@ -55,6 +45,7 @@ int F_iterative(int n)
                     newSnapshot.address=10; //intializing the instance's address with 10 to make this object enter case 10 again
                     snapshotStack.push(newSnapshot);
                 }
+
                 break;
             }
 
@@ -97,7 +88,6 @@ int main()
 
     for (int i = 1; i <=20 ; i++)
     {
-        cout<<F(i)<<endl;
         cout<<F_iterative(i)<<endl ;
     }
 
